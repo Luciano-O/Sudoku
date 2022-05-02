@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 function Game() {
-  const [columns, setColumns] = useState({
+  const [boxes, setBoxes] = useState({
     1: [],
     2: [],
     3: [],
@@ -24,46 +24,64 @@ function Game() {
     8: [],
     9: [],
   })
-
-  const [boxes, setBoxes] = useState({
-    '11': [],
-    '12': [],
-    '13': [],
-    '21': [],
-    '22': [],
-    '23': [],
-    '31': [],
-    '32': [],
-    '33': [],
+  const [columns, setColumns] = useState({
+    1: [],
+    2: [],
+    3: [],
+    4: [],
+    5: [],
+    6: [],
+    7: [],
+    8: [],
+    9: [],
   })
 
+  const saveSquare = () => {
+    let countLine = 0;
+    let countPos = 0;
+    for(let bb = 1; bb < 10; bb += 1){
+      const finalArr = [];
+      for(let b = 1; b < 4; b += 1) {
+        for(let l = 0; l < 3; l += 1) {
+          finalArr.push(lines[b + countLine][l + countPos])
+        }
+      }
+      boxes[bb] = finalArr
+      countLine += 3;
+      if (countLine > 6) {
+        countLine = 0
+        countPos += 3
+      }
+    }
+  }
+
   const testSquare = (line, column) => {
-    if (line === 1 || line === 2 || line === 2) {
-      switch (column) {
-        case 1 || 2 || 3:
-          return '11'
-        case 4 || 5 || 6:
-          return '12'
+    if(line === 1 || line === 2 || line === 3) {
+      switch (column){
+        case 1 || 2 || 3 :
+          return 1
+        case 4 || 5 || 6 :
+          return 4
         default:
-          return '13'
+          return 7
       }
-    } if (line === 4 || line === 5 || line === 6) {
-      switch (column) {
-        case 1 || 2 || 3:
-          return '21'
-          case 4 || 5 || 6:
-          return '22'
+    } if(line === 4 || line === 5 || line === 6) {
+      switch (column){
+        case 1 || 2 || 3 :
+          return 2
+        case 4 || 5 || 6 :
+          return 5
         default:
-          return '23'
+          return 8
       }
-    } if (line === 6 || line === 7 || line === 8) {
-      switch (column) {
-        case 1 || 2 || 3:
-          return '31'
-        case 4 || 5 || 6:
-          return '32'
+    } if(line === 7 || line === 8 || line === 9) {
+      switch (column){
+        case 1 || 2 || 3 :
+          return 3
+        case 4 || 5 || 6 :
+          return 6
         default:
-          return '33'
+          return 9
       }
     }
   }
@@ -78,23 +96,29 @@ function Game() {
   useEffect(() => {
     const generateGame = () => {
       for (let column = 1; column < 10; column += 1 ) {
-        for (let line = 1; line < 10; line += 1 ) {
+        const finalArr = [];
+        for (let line = 0; line < 9; line += 1 ) {
           let number = getRandomNumber();
-          const box = testSquare(line, column)
-          while (lines[line].includes(number) || columns[column].includes(number) || boxes[box].includes(number)) {
+          const box = testSquare(column, line + 1)
+          while (lines[column].includes(number) || columns[line + 1].includes(number) || boxes[box].includes(number)) {
             number = getRandomNumber();
           }
-          setLines(lines[line].concat(number));
-          setColumns(columns[column].concat(number));
-          setBoxes(boxes[box].concat(number))
+          finalArr[line] = number
+          columns[line + 1][column - 1] = number
         }
+        lines[column] = finalArr
       }
+      saveSquare();
     }
     generateGame();
+    // console.log(lines)
   }, [])
 
   return (
-    <h1>Ola</h1>
+    <>
+      <h1>Ola</h1>
+      {lines[1].map((item) => <p>{item}</p>)}
+    </>
   )
 }
 
